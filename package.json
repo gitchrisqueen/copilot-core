@@ -22,6 +22,6 @@
     "check": "for f in js/*.js; do node --check \"$f\" || exit 1; done"
   },
   "devDependencies": {
-    "c8": "^10.1.2"
+    "c8": "^12.0.0"
   }
 }
