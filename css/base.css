@@ -1,0 +1,215 @@
+/* Copilot Core — shared shell styles: design tokens, app grid, panel/tabbar scaffolding,
+   draggable dividers, the collapsible Live Copilot panel, rendered-markdown typography, and a
+   handful of generic components (card shell, chip, notifier, banner, transcript list, voice
+   pills). App-specific styling (answer-card badge types, code panel, binder, etc.) lives in each
+   app's own domain.css, loaded after this file so it can override tokens/selectors as needed. */
+
+:root {
+  --bg: #f4f5f7;
+  --panel: #ffffff;
+  --ink: #1a1d24;
+  --muted: #5b6472;
+  --line: #d9dee6;
+  --accent: #1f5fbf;
+  --accent-soft: #e8f0fc;
+  --good: #1a7f4b;
+  --good-soft: #e4f5ec;
+  --warn: #b4560a;
+  --warn-soft: #fdeede;
+  --hit: #fff4c2;
+  --code-bg: #1e222a;
+  --code-ink: #d8dee9;
+  --shadow: 0 1px 3px rgba(20, 30, 50, 0.08);
+  font-size: 16px;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+header.appbar {
+  display: flex; align-items: center; gap: 16px;
+  padding: 10px 18px; background: var(--ink); color: #fff;
+}
+header.appbar h1 { font-size: 1rem; margin: 0; font-weight: 600; letter-spacing: .2px; }
+header.appbar .spacer { flex: 1; }
+header.appbar button {
+  background: #2b3444; color: #fff; border: 1px solid #3c4658;
+  padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: .85rem;
+}
+header.appbar button:hover { background: #384356; }
+header.appbar .disclaimer { font-size: .72rem; color: #aeb6c4; }
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 6px 1fr;
+  gap: 12px; padding: 12px;
+  height: calc(100vh - 52px);
+}
+.col { display: flex; flex-direction: column; min-height: 0; gap: 12px; }
+.col.right { display: grid; grid-template-rows: 1fr 6px auto; gap: 12px; min-height: 0; }
+
+/* draggable dividers */
+.col-divider {
+  align-self: stretch; width: 6px; border-radius: 4px;
+  background: var(--line); cursor: col-resize;
+  transition: background .12s;
+}
+.row-divider {
+  justify-self: stretch; height: 6px; border-radius: 4px;
+  background: var(--line); cursor: row-resize;
+  transition: background .12s;
+}
+.col-divider:hover, .row-divider:hover,
+.col-divider.active, .row-divider.active { background: var(--accent); }
+
+body.dragging { user-select: none; cursor: inherit; }
+body.dragging.col-resizing { cursor: col-resize; }
+body.dragging.row-resizing { cursor: row-resize; }
+body.dragging iframe { pointer-events: none; }
+
+/* collapsible copilot panel */
+#copilot-tabbar { user-select: none; }
+.tab-spacer { flex: 1; }
+.collapse-btn {
+  align-self: center; border: 1px solid var(--line); background: #fff; color: var(--muted);
+  border-radius: 6px; padding: 1px 8px; margin: 0 2px 4px; cursor: pointer; font-size: .8rem; line-height: 1.4;
+}
+.collapse-btn:hover { background: #f2f5f9; }
+#copilot-panel.collapsed { height: auto; min-height: min-content; }
+#copilot-panel.collapsed > .body { display: none; }
+.col.right.copilot-collapsed .row-divider { display: none; }
+.col.right.copilot-collapsed { grid-template-rows: 1fr 0 minmax(40px, var(--collapsed-h, 42px)); }
+#copilot-panel.collapsed > .tabbar { background: var(--accent-soft); }
+
+.panel {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 10px; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; min-height: 0; overflow: hidden;
+}
+.panel > .tabbar {
+  display: flex; gap: 2px; padding: 6px 6px 0; border-bottom: 1px solid var(--line);
+  background: #fbfcfe; flex-wrap: wrap;
+}
+.tabbar button {
+  border: 1px solid transparent; border-bottom: none; background: none;
+  padding: 7px 12px; border-radius: 8px 8px 0 0; cursor: pointer;
+  font-size: .85rem; color: var(--muted);
+}
+.tabbar button.active { background: var(--panel); color: var(--ink); border-color: var(--line); font-weight: 600; }
+.panel > .body { flex: 1 1 auto; padding: 14px 16px; overflow: auto; min-height: 0; }
+
+/* rendered markdown (md.js output) */
+.md h1 { font-size: 1.3rem; margin: .2em 0 .5em; }
+.md h2 { font-size: 1.12rem; margin: 1.1em 0 .4em; padding-top: .3em; border-top: 1px solid var(--line); }
+.md h3 { font-size: 1rem; margin: 1em 0 .3em; color: #2b3444; }
+.md p { margin: .5em 0; }
+.md table { border-collapse: collapse; width: 100%; margin: .8em 0; font-size: .86rem; }
+.md th, .md td { border: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+.md th { background: var(--accent-soft); }
+.md blockquote { margin: .6em 0; padding: .4em .9em; border-left: 3px solid var(--accent); background: #f7f9fc; color: #2b3444; }
+.md code { background: #eef1f5; padding: 1px 5px; border-radius: 4px; font-size: .85em; }
+.md ul, .md ol { margin: .4em 0 .6em 1.3em; }
+.md hr { border: none; border-top: 1px solid var(--line); margin: 1em 0; }
+.md a { color: var(--accent); }
+
+/* generic card shell (apps extend with their own badge/body classes) */
+.card {
+  border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px; margin: 10px 0;
+  background: #fff; transition: box-shadow .15s, border-color .15s;
+}
+.card.fresh { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.card.offline { border-style: dashed; }
+.card .head { display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+.card .qtime { font-size: .72rem; color: var(--muted); white-space: nowrap; padding-top: 2px; }
+.card .working { font-size: .82rem; color: var(--muted); font-style: italic; }
+
+.chip {
+  display: inline-block; font-size: .74rem; padding: 2px 8px; border-radius: 20px;
+  background: var(--accent-soft); color: var(--accent); border: 1px solid #cfe0f7; cursor: pointer;
+}
+.chip:hover { background: #d7e6fb; }
+.chip.cx { background: var(--good-soft); color: var(--good); border-color: #bfe6cf; cursor: default; }
+.btn-mini {
+  font-size: .76rem; padding: 3px 9px; border-radius: 6px; border: 1px solid var(--line);
+  background: #fff; cursor: pointer; color: var(--muted);
+}
+.btn-mini:hover { background: #f2f5f9; }
+
+/* live toggle */
+.live-toggle {
+  border: 1px solid var(--line); background: #fff; color: var(--ink);
+  padding: 7px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: .85rem;
+}
+.live-toggle.on { background: var(--good); color: #fff; border-color: var(--good); }
+.live-toggle.on::before { content: "\25CF  "; color: #fff; }
+.live-toggle.small { padding: 6px 10px; font-size: .8rem; font-weight: 500; }
+.interim { min-height: 20px; font-size: .85rem; color: var(--muted); font-style: italic; padding: 2px 0; }
+
+/* notifier */
+.notifier { max-height: 130px; overflow: auto; border: 1px solid var(--line); border-radius: 7px; background: #fbfcfe; padding: 4px 6px; margin-top: 8px; }
+.notif { font-size: .82rem; padding: 3px 4px; border-bottom: 1px dotted var(--line); }
+.notif:last-child { border-bottom: none; }
+.notif .nt { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 6px; }
+
+/* voices strip (multi-speaker voice-ID chips) */
+.voices-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin: 6px 0 2px; }
+.voices-cap { font-size: .72rem; color: var(--muted); }
+.voices-cap .hint { font-style: italic; }
+.voice-pill {
+  font-size: .72rem; padding: 1px 8px; border-radius: 20px; white-space: nowrap; cursor: pointer;
+  background: #f5edff; color: #6b2fbf; border: 1px solid #d3b8f5;
+}
+.voice-pill:hover { background: #ead9ff; }
+.voice-pill-saved { border-width: 2px; font-weight: 600; }
+.voice-tagger {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px; width: 100%;
+  padding: 4px 6px; border: 1px dashed #d3b8f5; border-radius: 8px; background: #faf6ff;
+}
+.vt-cap { font-size: .74rem; font-weight: 600; color: #6b2fbf; }
+.vt-name { font-size: .78rem; padding: 4px 7px; border: 1px solid var(--line); border-radius: 6px; flex: 1; min-width: 150px; }
+
+/* manual transcript entry */
+.manual { display: flex; gap: 6px; align-items: center; margin: 8px 0 4px; }
+.manual-in {
+  flex: 1; border: 1px solid var(--line); border-radius: 7px; padding: 7px 9px;
+  font-family: inherit; font-size: .86rem;
+}
+.manual-in:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+/* transcript toolbar + list */
+.tl-bar { display: flex; align-items: center; gap: 6px; padding-bottom: 6px; margin-bottom: 4px; border-bottom: 1px solid var(--line); }
+.tl-reassign { font-size: .72rem; border: 1px solid var(--line); border-radius: 6px; padding: 1px 4px; background: #fff; color: var(--muted); max-width: 130px; }
+.tl-scroll { overflow: auto; flex: 1 1 auto; min-height: 0; }
+.tl-list { display: flex; flex-direction: column; }
+.tl-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px; padding: 6px 8px; border-bottom: 1px solid var(--line); font-size: .85rem; }
+.tl-row:hover { background: #fbfcfe; }
+.tl-time { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; padding-top: 3px; font-size: .78rem; }
+.tl-name { font-weight: 600; font-size: .8rem; white-space: nowrap; padding-top: 3px; }
+.tl-text { flex: 1; min-width: 140px; padding: 3px 5px; border-radius: 5px; border: 1px solid transparent; }
+.tl-text:hover, .tl-text:focus { border-color: var(--line); background: #fff; outline: none; }
+
+.note { font-size: .78rem; color: var(--muted); padding: 6px 0; }
+.banner {
+  margin: 10px 0; padding: 8px 12px; border-radius: 7px; font-size: .82rem;
+  background: var(--warn-soft); border: 1px solid #f0cfa8; color: #7a3d08;
+}
+mark { background: var(--hit); }
+.hidden { display: none !important; }
+
+/* ---- companion-viewer responsiveness (phone/tablet as a LAN second screen) ---- */
+@media (max-width: 768px) {
+  .grid { grid-template-columns: 1fr !important; grid-template-rows: auto auto; height: auto; min-height: calc(100vh - 52px); }
+  .col-divider { display: none; }
+}
+@media (max-width: 480px) {
+  :root { font-size: 15px; }
+  header.appbar { flex-wrap: wrap; padding: 8px 12px; }
+  header.appbar button, .live-toggle, .chip, .btn-mini, .tabbar button { min-height: 44px; }
+  .tabbar button { padding: 10px 12px; }
+}

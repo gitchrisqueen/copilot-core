@@ -1,0 +1,27 @@
+{
+  "name": "@gitchrisqueen/copilot-core",
+  "version": "0.1.0",
+  "description": "Shared browser modules for live copilot apps: markdown rendering, layout, settings persistence, ASR capture, LLM transport with provider failover, and a transcript store. Zero-build, no runtime dependencies.",
+  "license": "MIT",
+  "author": "Christopher Queen",
+  "homepage": "https://github.com/gitchrisqueen/copilot-core",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gitchrisqueen/copilot-core.git"
+  },
+  "files": [
+    "js",
+    "css"
+  ],
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "c8 -r lcov -r text node --test test/js/",
+    "check": "for f in js/*.js; do node --check \"$f\" || exit 1; done"
+  },
+  "devDependencies": {
+    "c8": "^10.1.2"
+  }
+}

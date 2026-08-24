@@ -1,0 +1,56 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request: {}
+
+jobs:
+  js:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run check
+      - run: npm ci
+      - run: npx c8 -r lcov -r text node --test test/js/**/*.test.js
+      - uses: codecov/codecov-action@v5
+        with:
+          flags: js
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  python:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install -e '.[dev]'
+      - run: ruff check .
+      - run: pytest --cov=copilot_core --cov-report=xml test/python/
+      - uses: codecov/codecov-action@v5
+        with:
+          flags: python
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: install shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+      - name: shellcheck any *.command scripts
+        run: |
+          shopt -s nullglob
+          files=(*.command)
+          if [ ${#files[@]} -gt 0 ]; then
+            for f in "${files[@]}"; do bash -n "$f"; done
+            shellcheck -S warning "${files[@]}"
+          else
+            echo "no .command scripts in this repo"
+          fi

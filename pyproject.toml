@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "copilot-core"
+version = "0.1.0"
+description = "Shared Python sidecars for live copilot apps: a secret-injecting static web server, a transcript/settings/ASR-proxy log server, and a speaker-ID embedding engine."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Christopher Queen" }]
+dependencies = []
+
+[project.optional-dependencies]
+speaker = ["numpy>=1.26", "sherpa-onnx>=1.10"]
+dev = ["pytest>=8", "pytest-cov>=5", "numpy>=1.26", "ruff>=0.6"]
+
+[project.urls]
+Homepage = "https://github.com/gitchrisqueen/copilot-core"
+Repository = "https://github.com/gitchrisqueen/copilot-core"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/copilot_core"]
+
+[tool.ruff]
+line-length = 160
+
+[tool.ruff.lint]
+# Pyflakes + pycodestyle only. This codebase deliberately fails soft with broad
+# try/except/pass around network and disk I/O (a slow/missing sidecar must never break the
+# transcript) and uses naive local-time timestamps for on-disk logs, matching the sibling apps'
+# style -- ruff's stricter opinionated rule families (BLE/S/DTZ/TRY/SIM/UP) fight that style
+# rather than catching real bugs here.
+select = ["E", "F", "W"]
+# E701/E702: this codebase's HTTP handlers deliberately pack short related statements onto one
+# line (self.send_response(...); self._cors()), matching both source apps' established style.
+ignore = ["E701", "E702"]
+
+[tool.pytest.ini_options]
+testpaths = ["test/python"]

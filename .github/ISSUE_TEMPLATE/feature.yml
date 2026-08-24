@@ -1,0 +1,24 @@
+name: Feature request
+description: Propose a change to a shared module
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's the problem this solves?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+    validations:
+      required: true
+  - type: checkboxes
+    id: consumers
+    attributes:
+      label: Which app(s) does this affect?
+      options:
+        - label: hearing-copilot
+        - label: tech-interview-copilot
+        - label: A future/unknown consumer
