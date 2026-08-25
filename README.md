@@ -76,7 +76,12 @@ shared modules:
 window.CopilotCore = {
   ns: "myapp",                          // localStorage key prefix (layout.js, transcript.js)
   transcript: {
+    roleField: "speaker",                     // optional: rename the segment's role property (default "role")
+                                               // -- lets an app with an existing schema (e.g. a large amount
+                                               // of code already reading `seg.speaker`) adopt this module
+                                               // without a rename sweep
     persistKeys: ["text", "role", "name"],   // which fields trigger a disk rewrite on update()
+                                               // (defaults to ["text", <roleField>, "name"])
     labelFor: function (seg) { ... }          // optional custom display-label formatter
   },
   asr: {

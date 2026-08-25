@@ -7,4 +7,4 @@ embed_fn (as the test suite does) so the pure clustering/threshold/EMA logic is 
 testable without the ONNX model.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
