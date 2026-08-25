@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "copilot-core"
-version = "0.1.0"
+version = "0.1.1"
 description = "Shared Python sidecars for live copilot apps: a secret-injecting static web server, a transcript/settings/ASR-proxy log server, and a speaker-ID embedding engine."
 readme = "README.md"
 requires-python = ">=3.9"

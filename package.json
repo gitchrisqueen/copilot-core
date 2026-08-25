@@ -1,6 +1,6 @@
 {
   "name": "@gitchrisqueen/copilot-core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Shared browser modules for live copilot apps: markdown rendering, layout, settings persistence, ASR capture, LLM transport with provider failover, and a transcript store. Zero-build, no runtime dependencies.",
   "license": "MIT",
   "author": "Christopher Queen",

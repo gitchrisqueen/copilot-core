@@ -1,19 +1,24 @@
 // Dated, editable transcript log. Persists in the browser (localStorage) so it survives reloads,
 // and mirrors every segment to the durable disk log (log-server) fire-and-forget.
-// Canonical segment shape: { id, ts (ISO), date (YYYY-MM-DD), role, text, name, ...extra }.
-// `role` is one of the ids in the app's configured roles list (see window.CopilotCore.roles).
-// `name` is the display name of an identified voice (a rename retroactively patches every line
-// of that cluster). Apps may attach additional fields via `add(role, text, extra)`'s extra bag
-// (e.g. a raw voice verdict, or ids from an LLM/keyword match pass).
+// Canonical segment shape: { id, ts (ISO), date (YYYY-MM-DD), <roleField>, text, name, ...extra }.
+// The role field is named "role" by default but can be renamed via
+// window.CopilotCore.transcript.roleField (e.g. "speaker") so an app with an existing schema and
+// a large amount of code already reading `seg.speaker` can adopt this module without a rename
+// sweep. Its value is one of the ids in the app's configured roles list (see
+// window.CopilotCore.roles). `name` is the display name of an identified voice (a rename
+// retroactively patches every line of that cluster). Apps may attach additional fields via
+// `add(role, text, extra)`'s extra bag (e.g. a raw voice verdict, or ids from an LLM/keyword
+// match pass).
 (function (global) {
   var NS = (global.CopilotCore && global.CopilotCore.ns) || "cc";
   var KEY = NS + "_transcript_v1";
+  function cfg() { return (global.CopilotCore && global.CopilotCore.transcript) || {}; }
+  function roleField() { return cfg().roleField || "role"; }
   // Which fields, besides id/ts/date, trigger a disk rewrite on update() -- i.e. which fields are
   // durable record content vs transient browser-only metadata (raw voice verdicts, match scores).
   // Override via window.CopilotCore.transcript.persistKeys = ["text","role","name","matchedId",...].
   function persistKeys() {
-    var t = (global.CopilotCore && global.CopilotCore.transcript) || {};
-    return t.persistKeys || ["text", "role", "name"];
+    return cfg().persistKeys || ["text", roleField(), "name"];
   }
   var data = [];
 
@@ -38,7 +43,8 @@
   function add(role, text, extra) {
     var now = new Date();
     var seg = { id: "t" + now.getTime() + "_" + Math.floor(Math.random() * 1000),
-      ts: now.toISOString(), date: todayStr(), role: role, text: text, voice: null, name: "" };
+      ts: now.toISOString(), date: todayStr(), text: text, voice: null, name: "" };
+    seg[roleField()] = role;
     if (extra) Object.keys(extra).forEach(function (k) { seg[k] = extra[k]; });
     data.push(seg); save(); disk(seg);
     return seg;
@@ -79,9 +85,9 @@
   // window.CopilotCore.transcript.labelFor = function(seg) { return "..."; } for app-specific
   // labels ("ME" / "INTERVIEWER", or a party name).
   function speakerLabel(s) {
-    var t = (global.CopilotCore && global.CopilotCore.transcript) || {};
+    var t = cfg();
     if (typeof t.labelFor === "function") { try { return t.labelFor(s); } catch (e) {} }
-    return (s.name || s.role || "").toString().toUpperCase();
+    return (s.name || s[roleField()] || "").toString().toUpperCase();
   }
   function exportText(date) {
     return byDate(date).map(function (s) {
@@ -107,6 +113,7 @@
     byDate: byDate, dates: dates, clearDate: clearDate, exportText: exportText, today: todayStr,
     speakerLabel: speakerLabel,
     all: function () { return data.slice(); },
-    _key: function () { return KEY; }
+    _key: function () { return KEY; },
+    _roleField: roleField
   };
 })(typeof window !== "undefined" ? window : globalThis);
