@@ -74,6 +74,21 @@ test("transcript: exportText honors a custom labelFor hook", () => {
   assert.match(text, /PLAINTIFF: objection/);
 });
 
+test("transcript: roleField renames the schema's role property (e.g. an app with an existing `speaker` field)", () => {
+  const { win, diskCalls } = boot({ transcriptCfg: { roleField: "speaker" } });
+  const seg = win.TLOG.add("plaintiff", "objection");
+  assert.equal(seg.speaker, "plaintiff", "value lands under the configured field name");
+  assert.equal(seg.role, undefined, "the default 'role' field is not also written");
+  assert.equal(win.TLOG._roleField(), "speaker");
+
+  diskCalls.length = 0;
+  win.TLOG.update(seg.id, { speaker: "defendant" }); // default persistKeys tracks the configured field
+  assert.equal(diskCalls.length, 1, "reassigning the renamed role field still triggers a disk rewrite");
+
+  const text = win.TLOG.exportText(win.TLOG.today());
+  assert.match(text, /DEFENDANT: objection/, "default label formatter reads the renamed field too");
+});
+
 test("transcript: clearDate removes locally and issues a DELETE to the log server", () => {
   const { win, diskCalls } = boot();
   const today = win.TLOG.today();
