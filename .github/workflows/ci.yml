@@ -16,7 +16,7 @@ jobs:
       - run: npm run check
       - run: npm ci
       - run: npx c8 -r lcov -r text node --test test/js/**/*.test.js
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@v7
         with:
           flags: js
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -34,7 +34,7 @@ jobs:
       - run: pip install -e '.[dev]'
       - run: ruff check .
       - run: pytest --cov=copilot_core --cov-report=xml test/python/
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@v7
         with:
           flags: python
           token: ${{ secrets.CODECOV_TOKEN }}
