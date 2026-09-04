@@ -39,7 +39,7 @@ shell, chip, notifier, transcript list, voice pills). Apps load their own `domai
 | `envfile` | Minimal `.env` loader (env vars always win over the file) |
 | `webserver` | No-cache static file server that injects `.env` secrets into a `%PLACEHOLDER%` config file, refuses to serve dotfiles, and supports app-owned virtual routes |
 | `logserver` | Transcript JSONL log + `/settings` store + a server-side Together AI transcription proxy |
-| `speaker.engine` | `SpeakerEngine` -- CAM++ voice embeddings (via sherpa-onnx), online clustering, EMA-learned centroids, accept/suggest/margin thresholds. Accepts an injected `embed_fn` so it's testable (and usable) without the ONNX model. Needs numpy either way (`pip install 'copilot-core[speaker]'` for the real embedder). |
+| `speaker.engine` | `SpeakerEngine` -- CAM++ voice embeddings (via sherpa-onnx), online clustering, EMA-learned centroids, accept/suggest/margin thresholds. Accepts an injected `embed_fn` so it's testable (and usable) without the ONNX model. Needs numpy either way (`pip install 'copilot-core[speaker] @ git+https://github.com/gitchrisqueen/copilot-core@v0.1.1'` for the real embedder). |
 
 Each app's own `speaker-server.py` (an HTTP wrapper around `SpeakerEngine`, plus any
 app-specific policy like mapping anonymous clusters to named roles) stays in that app's repo --
@@ -121,9 +121,9 @@ npm install && npm test          # node:test + c8 coverage (lcov + text)
 pip install -e '.[dev]' && ruff check . && pytest --cov=copilot_core
 ```
 
-The `npm test` script passes the `test/js/` directory to `node --test`, which newer Node
-releases reject (on Node 26 it fails with "Cannot find module .../test/js"). CI runs the glob
-form on Node 22, which is what to use if `npm test` fails for you:
+The `npm test` script passes the `test/js/` directory to `node --test`, which fails on at
+least Node 26 ("Cannot find module .../test/js"). CI runs the glob form on Node 22, which is
+what to use if `npm test` fails for you:
 
 ```bash
 npx c8 -r lcov -r text node --test test/js/**/*.test.js
