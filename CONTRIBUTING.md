@@ -48,11 +48,15 @@ on (free for public repos, zero YAML to write); secret scanning + push protectio
 - `ANTHROPIC_API_KEY` -- for the claude-review workflow
 - `CODECOV_TOKEN` -- from the CodeCov GitHub App install (public repos can upload tokenless, but
   a token avoids a rate-limit flake class)
-- npm and PyPI publishing use **trusted publishing (OIDC)** once configured on each registry, so
-  no long-lived publish tokens are needed as repo secrets. See [README.md](README.md#versioning).
+- npm and PyPI publishing are meant to use **trusted publishing (OIDC)** once configured on each
+  registry, so no long-lived publish tokens are needed as repo secrets. That configuration has
+  not been done yet: the `npm-publish` and `pypi-publish` jobs failed on both the `v0.1.0` and
+  `v0.1.1` release runs, and neither package is on its registry. Consumers install from a git
+  tag for now (see [README.md](README.md#using-it-from-an-app)).
 
 ## Versioning
 
 Semver, one version tracked across `package.json` and `pyproject.toml` in lockstep. Releases are
 tag-driven (`vX.Y.Z` on `main`); `.github/workflows/release.yml` runs the full CI suite, then
-publishes to npm and PyPI, then creates a GitHub Release with generated notes.
+publishes to npm and PyPI, then creates a GitHub Release with generated notes. The publish steps
+have not succeeded yet (see above), so no GitHub Release has been created for either tag.
