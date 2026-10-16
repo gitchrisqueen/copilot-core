@@ -44,6 +44,6 @@ form above if it does. Codecov enforces an 80% project and patch gate (`codecov.
   fails soft on purpose.
 - One version, kept in lockstep across `package.json` and `pyproject.toml` (semver). Releases
   are tag-driven (`vX.Y.Z`); apps pin an exact git tag.
-- Every PR runs `ci.yml` (`js`, `python`, `shell`) and `claude-review`. See `CONTRIBUTING.md`
+- Every PR runs `ci.yml` (`js`, `python`, `shell`). See `CONTRIBUTING.md`
   for branch protection and release setup.
 - Never commit secrets; `example.env` documents the variables.
